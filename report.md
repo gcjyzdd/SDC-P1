@@ -1,8 +1,7 @@
 # **Finding Lane Lines on the Road** 
 
-## Writeup Template
+## Summary of the method used in the code
 
-### You can use this file as a template for your writeup if you want to submit it as a markdown file. But feel free to use some other method and submit a pdf if you prefer.
 
 ---
 
@@ -21,27 +20,35 @@ The goals / steps of this project are the following:
 
 ### Reflection
 
-### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
+### 1. Deescription of the pipeline
 
-My pipeline consisted of 5 steps. First, I converted the images to grayscale, then I .... 
+Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
 
-In order to draw a single line on the left and right lanes, I modified the draw_lines() function by ...
+My pipeline consisted of 5 steps. 
 
-If you'd like to include images to show how the pipeline works, here is how to include an image: 
+  1. First, I converted the images to grayscale;
+  2. Applied a gaussion blurring filter with kernel size of 5 to the grayscale image;
+  3. Got edges of the filtered image using Canny detection;
+  4. Select ROI of the edge image and got the masked edges;
+  5. Generated the final output image using alpha blending (linearly weighted).
 
-![alt text][image1]
+In order to draw a single line on the left and right lanes, I first categorized the line segments to left and right parts based on their slopes. Then I tried to use least squares to get a best fiited line for both parts. The code is [testImages.py](./testImages.py). However, the result of the test video is not stable because some outlier points.
+
+To improve the stability of the method, I used slope and intersection of exsiting(detected) lines instead of solving least squares. I computed the weighted cost of each detected line based on their length and selected the slope and intersection which has minimum cost. The code is [testImages_v2.py](testImages_v2.py) and is adopted in [P1_My.ipynb](P1_My.ipynb). Then I selectd the lower endpoint at the bottom of the image and the minimum y coordinate as the upper endpoint. The output test videos are stable.
+
+Run ipython to check the result.
 
 
-### 2. Identify potential shortcomings with your current pipeline
+### 2. Potential shortcomings
 
-
-One potential shortcoming would be what would happen when ... 
-
-Another shortcoming could be ...
+  1. Fixed ROI selection. For different cameras positions and orientations, the real ROI could be different;
+  2. Only two lane lines are detected. In real life, there may be three or more lane lines are available;
+  3. Canny detection could fail because of light reflections.
 
 
 ### 3. Suggest possible improvements to your pipeline
 
-A possible improvement would be to ...
+  1. Include the car's size of camera calibration data to calculate a proper ROI;
+  2. Use k means to get 2 or 3 lines;
+  3. Add a memory mechanism like Kalman filter to enhance reliability of the algorithm.
 
-Another potential improvement could be to ...
