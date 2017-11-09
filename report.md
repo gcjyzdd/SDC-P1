@@ -42,13 +42,18 @@ Run ipython to check the result.
 ### 2. Potential shortcomings
 
   1. Fixed ROI selection. For different cameras positions and orientations, the real ROI could be different;
+  
   2. Only two lane lines are detected. In real life, there may be three or more lane lines are available;
+  
   3. Canny detection could fail because of light reflections.
+
 
 
 ### 3. Suggest possible improvements to your pipeline
 
   1. Include the car's size of camera calibration data to calculate a proper ROI;
+  
   2. Use k means to get 2 or 3 lines;
+  
   3. Add a memory mechanism like Kalman filter to enhance reliability of the algorithm.
 
