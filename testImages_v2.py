@@ -71,16 +71,21 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
     this function with the weighted_img() function below
     """
 
+    # average coordinates of line segments
     x_l = []
     y_l = []
     x_r = []
     y_r = []
+    # weights based on length
     w_l = []
     w_r = []
+    # intersections
     b_l = []
     b_r = []
+    # slope
     k_l = []
     k_r = []
+    # upper endpoint
     y_min_l = 539
     y_min_r = 539
 
@@ -89,7 +94,7 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
             L = math.sqrt((x1-x2)**2 + (y1-y2)**2)
             k = (y2 - y1)/(x2 - x1)
             b = y1 - k * x1
-            if k>0:
+            if k>0:# right parts
                 x_r.append((x1+x2)/2.0)
                 y_r.append((y1+y2)/2.0)
                 w_r.append(L)
@@ -101,7 +106,7 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
 
                 if y_min_r > y2:
                     y_min_r = y2
-            else:
+            else:# left parts
                 x_l.append((x1+x2)/2.0)
                 y_l.append((y1+y2)/2.0)
                 w_l.append(L)
@@ -116,21 +121,23 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
             #print( k, L)
             #cv2.line(img, (x1, y1), (x2, y2), color, thickness)
 
+    # cost
     cost_l = 1e9
     cost_r = 1e9
 
+    # Get lane line
     for i in range(len(b_l)):
+        # calculate distance of each (k,b)
         dist = distance(k_l[i], b_l[i], x_l, y_l, w_l)
 
         if cost_l > dist:
             cost_l = dist
             m_l = k_l[i]
             c_l = b_l[i]
-
-    #print(m_l,c_l)
-    #print('Done left')
+    # plot on the image
     cv2.line(img, (math.floor((539-c_l)/m_l), 539), (math.floor((y_min_l-c_l)/m_l), y_min_l), color, thickness)
 
+    # Get right lane line
     for i in range(len(b_r)):
         dist = distance(k_r[i], b_r[i], x_r, y_r, w_r)
         if cost_r > dist:
@@ -138,14 +145,20 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
             m_r = k_r[i]
             c_r = b_r[i]
 
-    #print(m_r,c_r)
-    #print('Done left')
     cv2.line(img, (math.floor((539-c_r)/m_r), 539), (math.floor((y_min_r-c_r)/m_r), y_min_r), color, thickness)
 
 
 def distance(k,b,x,y,l):
+    """
+    k and b is the  objective line. x, y, and l are all the lines.
+    
+    Returns the weighted distance of the objective line
+    """
+    
     s = 0
     for i in range(len(x)):
+        # compute weighted cost
+        # (x0，y0) to ax + by +c = 0 is abs(a*x0+b*y0+c)/sqr(a**2+b**2)
         s += l[i]*math.fabs(k*x[i]+b-y[i])/math.sqrt(1 +  k**2)
     return s
 
