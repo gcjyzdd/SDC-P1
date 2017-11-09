@@ -27,13 +27,13 @@ Describe your pipeline. As part of the description, explain how you modified the
 My pipeline consisted of 5 steps. 
 
   1. First, I converted the images to grayscale;
-  
+
   2. Applied a gaussion blurring filter with kernel size of 5 to the grayscale image;
-  
+
   3. Got edges of the filtered image using Canny detection;
-  
+
   4. Select ROI of the edge image and got the masked edges;
-  
+
   5. Generated the final output image using alpha blending (linearly weight
   
 In order to draw a single line on the left and right lanes, I first categorized the line segments to left and right parts based on their slopes. Then I tried to use least squares to get a best fiited line for both parts. The code is [testImages.py](./testImages.py). However, the result of the test video is not stable because some outlier points.
